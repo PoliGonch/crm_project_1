@@ -1,0 +1,14 @@
+version: "3.0"
+services:
+  db:
+    image: postgres
+    env_file:
+      - ".env"
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5433:5432
+  redis:
+    image: redis:latest
+    ports:
+      - 127.0.0.1:6389:6379

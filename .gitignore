@@ -1,0 +1,6 @@
+venv
+/.env
+.idea
+/static/admin/
+crm_project/.env
+/data/
