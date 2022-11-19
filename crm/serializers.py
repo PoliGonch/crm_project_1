@@ -39,6 +39,8 @@ class LoginSerializer(serializers.Serializer):
         # password = UserManager.get_hash(data.get('password'))
         password = data.get('password', None)
 
+        print(email, password)
+
         if email is None:
             raise serializers.ValidationError(
                 'An email address is required to log in.'
@@ -50,6 +52,7 @@ class LoginSerializer(serializers.Serializer):
             )
 
         user = authenticate(username=email, password=password)
+        print(user)
 
         if user is None:
             raise serializers.ValidationError(
@@ -70,6 +73,14 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'name', 'surname', 'token',)
+
+        read_only_fields = ('token',)
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
         min_length=8,

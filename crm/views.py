@@ -9,7 +9,8 @@ from rest_framework.generics import RetrieveUpdateAPIView
 
 from crm.models import Course, User, Enrollment, Lesson
 from crm.serializers import (UserSerializer, CourseShortSerializer, RegistrationSerializer, LoginSerializer,
-                             CourseSerializer, FullCourseSerializer, StudentFullCourseSerializer, LessonSerializer)
+                             CourseSerializer, FullCourseSerializer, StudentFullCourseSerializer, LessonSerializer,
+                             UserUpdateSerializer)
 from crm_project import settings
 from .backends import JWTAuthentication
 from .renderers import UserJSONRenderer
@@ -35,12 +36,12 @@ class RegistrationAPIView(APIView):
 
     def post(self, request):
         user = request.data.get('user', {})
-        print(user)
+        # print(user)
 
         serializer = self.serializer_class(data=user)
-        print('1')
+        # print('1')
         serializer.is_valid(raise_exception=True)
-        print(serializer.validated_data)
+        # print(serializer.validated_data)
         serializer.save()
         print(serializer.data)
 
@@ -65,7 +66,7 @@ class LoginAPIView(APIView):
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
 
     def retrieve(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
@@ -117,7 +118,7 @@ class UserCourseAPIView(RetrieveUpdateAPIView):
 
         new_data = {
             'email': user.email,
-            'password': user.password,
+            'password': None,
             'token': token,
             'name': user.name
         }

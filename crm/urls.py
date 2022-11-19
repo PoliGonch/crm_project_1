@@ -10,7 +10,7 @@ urlpatterns = [
     path('user/', UserRetrieveUpdateAPIView.as_view()),
     path('courses/', AllCourseAPIView.as_view()),
     path('courses/<int:pk>', CourseApiView.as_view()),
-    path('courses/<int:pk>/add_course/', UserCourseAPIView.as_view()),
+    path('courses/<int:pk>/add_course/', UserCourseAPIView.as_view()), #allows user to add himself to the course
     path('add_course/', UserCourseAPIView.as_view()),
     path('courses/<int:pk>/add_lesson/', LessonRetrieveUpdateAPIView.as_view()),
     path('courses/<int:pk>/edit/', CourseRetrieveUpdateAPIView.as_view()),
