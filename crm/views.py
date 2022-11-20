@@ -72,7 +72,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         serializer_data = request.data.get('user', {})
 
         serializer = self.serializer_class(
