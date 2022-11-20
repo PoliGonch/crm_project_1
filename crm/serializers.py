@@ -1,10 +1,7 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from crm.backends import JWTAuthentication
-from crm.models import User, Course, UserRole, UserManager, Enrollment, Lesson
-from django.contrib.auth import authenticate
-from django.shortcuts import get_object_or_404
-from django.core import serializers as srzr
+from crm.models import User, Course, Lesson
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -45,6 +42,10 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'An email address is required to log in.'
             )
+            # error_data = {
+            #     'error': 'An email address is required to log in!'
+            # }
+            # return error_data
 
         if password is None:
             raise serializers.ValidationError(
@@ -68,14 +69,20 @@ class LoginSerializer(serializers.Serializer):
             'email': user.email,
             'name': user.name,
             'surname': user.surname,
+            'role': user.role.id,
             'token': user.token
         }
 
 
 class UserSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
+    def get_role(self, obj):
+        return obj.role.id
+
     class Meta:
         model = User
-        fields = ('email', 'name', 'surname', 'token',)
+        fields = ('email', 'name', 'surname', 'role', 'token',)
 
         read_only_fields = ('token',)
 
@@ -87,9 +94,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    role = serializers.SerializerMethodField()
+
+    def get_role(self, obj):
+        return obj.role.id
+
     class Meta:
         model = User
-        fields = ('email', 'name', 'surname', 'password', 'token',)
+        fields = ('email', 'name', 'surname', 'role', 'password', 'token',)
 
         read_only_fields = ('token',)
 
@@ -128,7 +140,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class LessonSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Lesson
         fields = ['id', 'number', 'name', 'description']

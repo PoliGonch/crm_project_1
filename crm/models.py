@@ -1,17 +1,12 @@
-import jwt
-from django.db import models
-from django.db.models.signals import post_save, pre_save
-from django.core.cache import cache
 from datetime import datetime, timedelta
 
-from django.utils import timezone
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.core.validators import MinLengthValidator
+import jwt
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
-import bcrypt
+from django.db import models
+from django.utils import timezone
 
 clients_dict = {}
 salt_dict = {}
@@ -23,6 +18,10 @@ class UserManager(BaseUserManager):
 
         if name is None:
             raise TypeError('Users must have a username.')
+            # error_data = {
+            #     'error': 'Users must have a username'
+            # }
+            # return error_data
 
         if email is None:
             raise TypeError('Users must have an email address.')

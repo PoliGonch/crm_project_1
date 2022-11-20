@@ -1,18 +1,17 @@
 import jwt
-from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets, generics, permissions, status, serializers, authentication
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, status, authentication
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveUpdateAPIView
 
 from crm.models import Course, User, Enrollment, Lesson
 from crm.serializers import (UserSerializer, CourseShortSerializer, RegistrationSerializer, LoginSerializer,
                              CourseSerializer, FullCourseSerializer, StudentFullCourseSerializer, LessonSerializer,
                              UserUpdateSerializer)
 from crm_project import settings
-from .backends import JWTAuthentication
 from .renderers import UserJSONRenderer
 
 
@@ -73,7 +72,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def update(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer_data = request.data.get('user', {})
 
         serializer = self.serializer_class(
