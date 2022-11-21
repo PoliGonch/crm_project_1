@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv()
-
+# print(dotenv_path)
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crm_project.settings.local")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +34,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['crmback.fe-beetroot.ml', '127.0.0.1', '0.0.0.0', 'localhost']
 
 # Application definition
 
