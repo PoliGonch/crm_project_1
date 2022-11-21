@@ -10,9 +10,13 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from dotenv import load_dotenv
 
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crm_project.settings')
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv()
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crm_project.settings')
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crm_project.settings.local")
-os.environ["DJANGO_SETTINGS_MODULE"] = "crm_project.settings"
+# os.environ["DJANGO_SETTINGS_MODULE"] = "crm_project.settings"
 
 application = get_wsgi_application()
