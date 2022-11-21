@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv()
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crm_project.settings.local")
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crm_project.settings.local")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
