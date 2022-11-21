@@ -11,10 +11,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from os import path
 from pathlib import Path
+
 from dotenv import load_dotenv
-from datetime import timedelta
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv()
@@ -91,7 +92,7 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': 'localhost',
-        'PORT': 5433,
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
 
