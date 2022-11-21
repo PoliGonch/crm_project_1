@@ -122,16 +122,30 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class CourseShortSerializer(serializers.ModelSerializer):
     # description = serializers.CharField(max_length=500, unique=True)
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        if obj.author:
+            return obj.author.name + " " + obj.author.surname
+        return None
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'image']
+        fields = ['id', 'name', 'description', 'image', 'author', 'price']
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        if obj.author:
+            return obj.author.name + " " + obj.author.surname
+        else:
+            return None
+
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'image']
+        fields = ['id', 'name', 'description', 'image', 'author']
 
         read_only_fields = '__all__'
 
@@ -155,7 +169,14 @@ class TeacherViewUserSerializer(serializers.ModelSerializer):
 
 class FullCourseSerializer(serializers.ModelSerializer):
     users = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
     lesson = LessonSerializer()
+
+    def get_author(self, obj):
+        if obj.author:
+            return obj.author.name + " " + obj.author.surname
+        else:
+            return None
 
     def get_users(self, obj):
         users = User.objects.filter(courses=obj)
@@ -165,7 +186,7 @@ class FullCourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'image', 'lesson', 'users']
+        fields = ['id', 'name', 'description', 'image', 'lesson', 'users', 'author']
         # read_only_fields = '__all__'
 
 

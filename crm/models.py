@@ -140,18 +140,19 @@ class UserRole(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=250, unique=True)
-    description = models.CharField(max_length=500, unique=True)
+    description = models.CharField(max_length=500, unique=False)
     image = models.ImageField(blank=True, null=True)
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
     author = models.ForeignKey('User', on_delete=models.CASCADE, null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 
-    def create(self, name, description):
-        course = Course(name=name, description=description)
-        course.save()
-        return course
+    # def create(self, name, description):
+    #     course = Course(name=name, description=description)
+    #     course.save()
+    #     return course
 
 
 class Lesson(models.Model):

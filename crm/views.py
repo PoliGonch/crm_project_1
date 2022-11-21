@@ -151,7 +151,7 @@ class AllCourseAPIView(APIView):
 
     def get(self, request):
         queryset = Course.objects.all()
-        # print(queryset)
+        print(queryset)
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
