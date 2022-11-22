@@ -17,7 +17,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+path_to_parent_file = Path(__file__).resolve().parent
+# dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+dotenv_path = os.path.join(os.path.dirname(path_to_parent_file), '.env')
+print(dotenv_path)
+
 load_dotenv(dotenv_path)
 # print(dotenv_path)
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crm_project.settings.local")
