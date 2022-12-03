@@ -142,7 +142,7 @@ class Course(models.Model):
     name = models.CharField(max_length=250, unique=True)
     description = models.CharField(max_length=500, unique=False)
     image = models.ImageField(blank=True, null=True)
-    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
+    # lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
     author = models.ForeignKey('User', on_delete=models.CASCADE, null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
 
@@ -156,8 +156,9 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
     number = models.IntegerField()
-    name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(max_length=250, unique=False)
     description = models.TextField()
 
 

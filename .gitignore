@@ -4,3 +4,4 @@ venv
 /static/admin/
 crm_project/.env
 /data/
+*__pycache__*

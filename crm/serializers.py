@@ -125,9 +125,7 @@ class CourseShortSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
 
     def get_author(self, obj):
-        if obj.author:
-            return obj.author.name + " " + obj.author.surname
-        return None
+        return f"{obj.author.name} {obj.author.surname}" if obj.author else None
 
     class Meta:
         model = Course
@@ -138,10 +136,7 @@ class CourseSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
 
     def get_author(self, obj):
-        if obj.author:
-            return obj.author.name + " " + obj.author.surname
-        else:
-            return None
+        return f"{obj.author.name} {obj.author.surname}" if obj.author else None
 
     class Meta:
         model = Course
@@ -149,8 +144,18 @@ class CourseSerializer(serializers.ModelSerializer):
 
         read_only_fields = '__all__'
 
-    def create(self, validated_data):
-        return Course.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return Course.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+
+        instance.save()
+
+        return instance
+
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -170,17 +175,21 @@ class TeacherViewUserSerializer(serializers.ModelSerializer):
 class FullCourseSerializer(serializers.ModelSerializer):
     users = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
-    lesson = LessonSerializer()
+    lesson = serializers.SerializerMethodField()
 
     def get_author(self, obj):
-        if obj.author:
-            return obj.author.name + " " + obj.author.surname
-        else:
-            return None
+        return f"{obj.author.name} {obj.author.surname}" if obj.author else None
 
     def get_users(self, obj):
         users = User.objects.filter(courses=obj)
         serializer = TeacherViewUserSerializer(data=users, many=True)
+        serializer.is_valid()
+        return serializer.data
+
+    def get_lesson(self, obj):
+        lessons = Lesson.objects.filter(course=obj).order_by('number')
+        print(lessons)
+        serializer = LessonSerializer(data=lessons, many=True)
         serializer.is_valid()
         return serializer.data
 

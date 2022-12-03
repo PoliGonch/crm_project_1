@@ -253,19 +253,20 @@ class LessonRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         new_data = {
             'email': user.email,
-            'password': user.password,
+            # 'password': user.password,
             'token': token,
             'name': user.name
         }
 
         course = Course.objects.get(id=data['course_id'], author=user)
         lesson, _ = Lesson.objects.get_or_create(
+            course=course,
             number=data['number'],
             name=data['name'],
             description=data['description']
         )
-        course.lesson = lesson
-        course.save()
+
+        lesson.save()
 
         serializer = UserSerializer(user, data=new_data)
         serializer.is_valid(raise_exception=True)
