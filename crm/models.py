@@ -167,3 +167,11 @@ class Enrollment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     added_at = models.DateTimeField(default=timezone.now)  # дата поступления
     completed = models.BooleanField(null=True, blank=True)
+
+
+class Message(models.Model):
+    text = models.TextField()
+    sent_from = models.ForeignKey(User, related_name='sender', on_delete=models.SET_NULL, null=True)
+    sent_to = models.ForeignKey(User, related_name='recipient', on_delete=models.SET_NULL, null=True)
+    sent_at = models.DateTimeField(default=timezone.now)
+

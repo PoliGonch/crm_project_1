@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from crm.models import User, Course, Lesson
+from crm.models import User, Course, Lesson, Message
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -200,8 +200,68 @@ class FullCourseSerializer(serializers.ModelSerializer):
 
 
 class StudentFullCourseSerializer(serializers.ModelSerializer):
-    lesson = LessonSerializer()
+    lesson = serializers.SerializerMethodField()
+
+    def get_lesson(self, obj):
+        lessons = Lesson.objects.filter(course=obj).order_by('number')
+        print(lessons)
+        serializer = LessonSerializer(data=lessons, many=True)
+        serializer.is_valid()
+        return serializer.data
 
     class Meta:
         model = Course
         fields = ['id', 'name', 'description', 'image', 'lesson']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        fields = ['text']
+
+
+class SentMessageSerializer(serializers.ModelSerializer):
+    direction = serializers.SerializerMethodField()
+    sent_at = serializers.SerializerMethodField()
+
+    def get_direction(self, obj):
+        return 'from'
+
+    def get_sent_at(self, obj):
+        return obj.sent_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    class Meta:
+        model = Message
+        fields = ['text', 'direction', 'sent_at']
+
+
+class ReceivedMessageSerializer(serializers.ModelSerializer):
+    direction = serializers.SerializerMethodField()
+    sent_at = serializers.SerializerMethodField()
+
+    def get_direction(self, obj):
+        return 'to'
+
+    def get_sent_at(self, obj):
+        return obj.sent_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    class Meta:
+        model = Message
+        fields = ['text', 'direction', 'sent_at']
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    sent_from = UserSerializer
+    sent_to = UserSerializer
+
+    class Meta:
+        model = Message
+        fields = ['text', 'sent_from', 'sent_to', 'sent_at']
+
+
+class AllCourseUsers(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'surname', 'role']
