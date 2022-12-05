@@ -140,7 +140,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'image', 'author']
+        fields = ['id', 'name', 'description', 'image', 'author', 'price']
 
         # read_only_fields = '__all__'
 
@@ -197,7 +197,7 @@ class FullCourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'image', 'lesson', 'users', 'author']
+        fields = ['id', 'name', 'description', 'image', 'lesson', 'users', 'author', 'price']
         # read_only_fields = '__all__'
 
 

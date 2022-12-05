@@ -225,7 +225,7 @@ class CourseRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     def delete(self, request, pk):
         user, token = get_token(request)
         print(pk)
-        if request.method == 'DELETE' and Course.objects.get(pk=pk).author == user:
+        if request.method == 'DELETE' and get_object_or_404(Course, pk=pk) and Course.objects.get(pk=pk).author == user:
             new_data = {
                 'email': user.email,
                 'password': None,
@@ -241,6 +241,7 @@ class CourseRetrieveUpdateAPIView(RetrieveUpdateAPIView):
             return Response(serializer.data, status.HTTP_200_OK)
 
         return Response({}, status.HTTP_404_NOT_FOUND)
+
 
 class CourseApiView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -264,6 +265,22 @@ class CourseApiView(APIView):
             serializer = self.serializer_class(queryset)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FullCourseApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer,)
+    serializer_class = StudentFullCourseSerializer
+
+    def get(self, request, pk):
+
+        try:
+            queryset = Course.objects.get(id=pk)
+            serializer = CourseSerializer(queryset)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LessonRetrieveUpdateAPIView(RetrieveUpdateAPIView):
@@ -302,19 +319,42 @@ class LessonRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     # else:
     #     return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk):
+        user, token = get_token(request)
+
+        if request.method == 'DELETE' and get_object_or_404(Lesson, pk=pk) and Lesson.objects.get(
+                pk=pk).course.author == user:
+            new_data = {
+                'email': user.email,
+                'password': None,
+                'token': token,
+                'name': user.name
+            }
+
+            serializer = UserSerializer(user, data=new_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            Lesson.objects.get(pk=pk).delete()
+            return Response(serializer.data, status.HTTP_200_OK)
+
+        return Response({}, status.HTTP_404_NOT_FOUND)
 
 
 class MessageApiView(APIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer,)
+
     # serializer_class = MessageSerializer
 
     def get(self, request):
         user, token = get_token(request)
 
-        user_messages = Message.objects.filter(Q(sent_from=user)|Q(sent_to=user)).order_by('sent_at')
+        user_messages = Message.objects.filter(Q(sent_from=user) | Q(sent_to=user)).order_by('sent_at')
         print(user_messages)
         # msg_from_user = Message.objects.filter(sent_from=user).order_by('sent_at')
         msg_dict = {}
@@ -347,7 +387,7 @@ class MessageApiView(APIView):
             'text': data['text'],
             'sent_from': user,
             'sent_to': sent_to
-            }
+        }
 
         serializer = ContactMessageSerializer(new_data)
 
