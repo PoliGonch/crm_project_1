@@ -142,16 +142,18 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ['id', 'name', 'description', 'image', 'author']
 
-        read_only_fields = '__all__'
+        # read_only_fields = '__all__'
 
     # def create(self, validated_data):
     #     return Course.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
 
+        print(instance)
+        print(validated_data)
         for key, value in validated_data.items():
             setattr(instance, key, value)
-
+        print(instance)
         instance.save()
 
         return instance

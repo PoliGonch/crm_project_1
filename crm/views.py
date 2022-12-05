@@ -174,7 +174,7 @@ class CourseRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     serializer_class = CourseSerializer
 
     # def post(self, request):
-    #     user, token = get_token(request)
+    #     user, token = get_token(;request)
     #
     #     if user.role.id != 2:
     #         return Response({}, status=status.HTTP_404_NOT_FOUND)
@@ -199,21 +199,48 @@ class CourseRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        serializer_data = request.data.get('data', {})
-
-        serializer = self.serializer_class(
-            request.data, data=serializer_data, partial=True
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def __delete__(self, request):
         user, token = get_token(request)
-        if request.method == 'DELETE' and user.is_superuser and request.data.course_id:
-            Course.objects.filter(pk=request.data.course_id).delete()
+        data = request.data.get('data', {})
 
+        if Course.objects.get(id=data['course_id']).author == user:
+            new_data = {
+                'email': user.email,
+                'password': None,
+                'token': token,
+                'name': user.name
+            }
+
+            serializer = UserSerializer(user, data=new_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            course_serializer = self.serializer_class(Course.objects.get(id=data['course_id']), data=data, partial=True)
+            course_serializer.is_valid(raise_exception=True)
+            course_serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk):
+        user, token = get_token(request)
+        print(pk)
+        if request.method == 'DELETE' and Course.objects.get(pk=pk).author == user:
+            new_data = {
+                'email': user.email,
+                'password': None,
+                'token': token,
+                'name': user.name
+            }
+
+            serializer = UserSerializer(user, data=new_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            Course.objects.get(pk=pk).delete()
+            return Response(serializer.data, status.HTTP_200_OK)
+
+        return Response({}, status.HTTP_404_NOT_FOUND)
 
 class CourseApiView(APIView):
     permission_classes = (IsAuthenticated,)
