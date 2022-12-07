@@ -134,6 +134,8 @@ class UserCourseAPIView(RetrieveUpdateAPIView):
             # return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if user.role.id == 2:
+            if data['course_id']:
+                return Response({}, status=status.HTTP_404_NOT_FOUND)
             course = Course.objects.create(**data, author=user)
             course.save()
 
@@ -402,15 +404,22 @@ class AllCourseUsersApiView(APIView):
     renderer_classes = (UserJSONRenderer,)
 
     def get(self, request):
-        user, token = get_token(request)
 
-        courses = user.courses.all()
+        user, token = get_token(request)
+        courses = []
+
+        if user.role.id == 2:
+            courses = Course.objects.filter(author=user)
+        elif user.role.id == 3:
+            courses = user.courses.all()
         print(courses)
 
         course_dict = {'teachers': [], 'students': []}
         all_course_users = []
+
         for course in courses:
             course_users = User.objects.filter(courses=course)
+            all_course_users.append(course.author)
             all_course_users.extend(iter(course_users))
         print(all_course_users)
 
@@ -419,13 +428,16 @@ class AllCourseUsersApiView(APIView):
 
         for temp_user in all_course_users:
             if temp_user != user and user.role.id == 3 and temp_user.role.id == 2:
+                print(f'teacher: {temp_user=}')
                 course_dict['teachers'].append(AllCourseUsers(temp_user).data)
 
             elif temp_user != user and temp_user.role.id == 3:
+                print(f'student: {temp_user=}')
                 course_dict['students'].append(AllCourseUsers(temp_user).data)
 
             else:
                 print(temp_user.role)
+                print(f'else: {temp_user=}')
 
         print(course_dict)
 
