@@ -134,7 +134,7 @@ class UserCourseAPIView(RetrieveUpdateAPIView):
             # return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if user.role.id == 2:
-            if data['course_id']:
+            if 'course_id' in data:
                 return Response({}, status=status.HTTP_404_NOT_FOUND)
             course = Course.objects.create(**data, author=user)
             course.save()
